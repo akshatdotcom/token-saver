@@ -1,0 +1,12 @@
+{
+  "name": "solidify-gui",
+  "version": "0.1.0",
+  "description": "Browser-assisted prompt hardening for long-running coding and agent tasks.",
+  "skills": "./skills/",
+  "keywords": [
+    "prompt-hardening",
+    "agent",
+    "gui",
+    "tokens"
+  ]
+}
