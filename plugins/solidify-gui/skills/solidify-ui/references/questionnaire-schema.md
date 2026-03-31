@@ -66,6 +66,7 @@ The browser wizard writes this file after the user submits.
 
 - Every question in `questionnaire.json` must have a matching `id`.
 - Every response in `answers.json` must map to an existing question id.
+- The browser wizard starts each question in `custom` mode.
 - `mode=custom` requires a non-empty `value`.
 - `mode=default` uses the question’s `recommendedDefault`.
 - `mode=skip` uses the question’s `assumptionIfSkipped`.

@@ -19,233 +19,382 @@ HTML_PAGE = """<!doctype html>
   <title>Solidify Wizard</title>
   <style>
     :root {
-      --bg: #f7f4ed;
-      --panel: #fffdf8;
-      --ink: #1f1a14;
-      --muted: #6b6258;
-      --accent: #0f766e;
-      --border: #d9cfbf;
-      --warn: #8a5a00;
+      --bg: #f6f3ec;
+      --ink: #191510;
+      --muted: #6f675f;
+      --line: rgba(25, 21, 16, 0.1);
+      --panel: rgba(255, 255, 255, 0.8);
+      --accent: #111111;
+      --accent-soft: #ece8e1;
+      --danger: #a53a14;
     }
     * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
       margin: 0;
       font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--ink);
       background:
-        radial-gradient(circle at top left, #f8ecd1 0, transparent 28%),
-        linear-gradient(180deg, #fbf8f1 0%, var(--bg) 100%);
+        radial-gradient(circle at top left, rgba(242, 230, 203, 0.75), transparent 28%),
+        linear-gradient(180deg, #fcfbf8 0%, var(--bg) 100%);
     }
-    .shell {
-      max-width: 1100px;
+    button, textarea, summary { font: inherit; }
+    .app {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 18px 40px;
+    }
+    .topbar {
+      width: min(980px, 100%);
       margin: 0 auto;
-      padding: 32px 20px 64px;
-    }
-    .hero, .panel, .question {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      box-shadow: 0 10px 30px rgba(52, 41, 25, 0.06);
-    }
-    .hero {
-      padding: 28px;
-      margin-bottom: 18px;
-    }
-    .eyebrow {
-      display: inline-block;
-      margin-bottom: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--accent);
-    }
-    h1 {
-      margin: 0 0 8px;
-      font-size: clamp(28px, 4vw, 44px);
-      line-height: 1;
-    }
-    .subtitle {
-      margin: 0;
-      max-width: 720px;
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.5;
-    }
-    .grid {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 18px;
-      margin-bottom: 18px;
+      grid-template-columns: auto 1fr auto;
+      gap: 16px;
+      align-items: center;
     }
-    .panel {
-      padding: 22px;
-    }
-    .panel h2 {
-      margin-top: 0;
-      font-size: 18px;
-    }
-    .panel ul {
-      margin: 0;
-      padding-left: 18px;
-      color: var(--muted);
-    }
-    .panel p, .panel li {
-      line-height: 1.45;
-    }
-    .question {
-      padding: 22px;
-      margin-bottom: 16px;
-    }
-    .question h3 {
-      margin: 8px 0 10px;
-      font-size: 20px;
-      line-height: 1.3;
-    }
-    .meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+    .brand {
       font-size: 12px;
-      color: var(--muted);
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-    .chip {
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: #fcfaf5;
-    }
-    .label {
-      font-weight: 700;
-      color: var(--ink);
-    }
-    .block {
-      margin-top: 14px;
       color: var(--muted);
-      line-height: 1.45;
+      font-weight: 700;
     }
-    .choices {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 14px;
+    .progress {
+      height: 6px;
+      background: rgba(25, 21, 16, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
     }
-    .choice {
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #191510 0%, #4d4338 100%);
+      transition: width 160ms ease;
+    }
+    .progress-label {
+      font-size: 13px;
+      color: var(--muted);
+      min-width: 56px;
+      text-align: right;
+    }
+    .stage {
+      flex: 1;
+      width: min(980px, 100%);
+      margin: 0 auto;
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: #fcfaf5;
+      justify-content: center;
+      padding: 24px 0;
+    }
+    .card {
+      width: min(720px, 100%);
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: var(--panel);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 24px 60px rgba(30, 24, 18, 0.08);
+    }
+    .intro-kicker, .question-kicker {
+      margin: 0 0 14px;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    h1, h2 {
+      margin: 0;
+      font-size: clamp(32px, 6vw, 56px);
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+    }
+    .lead {
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.5;
+      max-width: 52ch;
+    }
+    .details {
+      margin-top: 22px;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+    }
+    details {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 0;
+    }
+    summary {
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 14px;
+      list-style: none;
+    }
+    summary::-webkit-details-marker { display: none; }
+    .details p, .details ul {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .details ul {
+      padding-left: 18px;
+    }
+    .cta-row, .footer-row {
+      margin-top: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .meta-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .chip {
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.72);
+    }
+    .chip-strong {
+      color: var(--ink);
+      font-weight: 700;
+    }
+    .question-text {
+      margin-top: 0;
+      font-size: clamp(30px, 5vw, 50px);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+    }
+    .subtle {
+      margin-top: 14px;
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .options {
+      display: grid;
+      gap: 12px;
+      margin-top: 26px;
+    }
+    .option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.76);
+      color: var(--ink);
+      cursor: pointer;
+      transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+    }
+    .option:hover {
+      transform: translateY(-1px);
+      border-color: rgba(25, 21, 16, 0.2);
+      box-shadow: 0 10px 30px rgba(25, 21, 16, 0.05);
+    }
+    .option.active {
+      border-color: rgba(17, 17, 17, 0.7);
+      box-shadow: 0 16px 32px rgba(17, 17, 17, 0.08);
+    }
+    .option-title {
+      font-weight: 700;
+    }
+    .option-note {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+      text-align: right;
+      max-width: 42ch;
     }
     textarea {
       width: 100%;
-      min-height: 110px;
-      margin-top: 12px;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      font: inherit;
-      background: white;
+      min-height: 180px;
+      margin-top: 16px;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.86);
       color: var(--ink);
       resize: vertical;
+      outline: none;
     }
-    button {
-      appearance: none;
-      border: 0;
-      border-radius: 14px;
-      padding: 14px 18px;
-      font: inherit;
-      font-weight: 700;
-      color: white;
-      background: var(--accent);
-      cursor: pointer;
+    textarea:focus {
+      border-color: rgba(17, 17, 17, 0.35);
+      box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.05);
     }
-    #status {
-      margin-top: 14px;
-      color: var(--warn);
+    textarea:disabled {
+      opacity: 0.55;
+      background: rgba(245, 242, 236, 0.82);
+    }
+    .validation, .status {
+      min-height: 20px;
+      margin-top: 12px;
+      color: var(--danger);
+      font-size: 14px;
       font-weight: 600;
     }
-    .footer-note {
-      margin-top: 16px;
-      color: var(--muted);
+    .status.ok {
+      color: #1d6f42;
     }
-    @media (max-width: 900px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
+    .button-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 22px;
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 120ms ease, opacity 120ms ease;
+    }
+    .button:hover { transform: translateY(-1px); }
+    .button:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+      transform: none;
+    }
+    .button-secondary {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+    .minimal {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    [hidden] { display: none !important; }
+    @media (max-width: 720px) {
+      .app { padding: 18px 14px 28px; }
+      .topbar { grid-template-columns: 1fr; gap: 10px; }
+      .progress-label { text-align: left; }
+      .card { padding: 22px; border-radius: 22px; }
+      .cta-row, .footer-row { flex-direction: column; align-items: stretch; }
+      .button-row { width: 100%; justify-content: space-between; }
+      .option { flex-direction: column; align-items: flex-start; }
+      .option-note { text-align: left; max-width: none; }
     }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <section class="hero">
-      <div class="eyebrow">Solidify Wizard</div>
-      <h1>Make your prompt production-ready before you let the agent cook.</h1>
-      <p class="subtitle">Review the repo-aware clarification questions below, answer only what matters, and save the result. Then return to Claude Code and reply <code>done</code>.</p>
-    </section>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">Solidify</div>
+      <div class="progress"><div id="progressBar" class="progress-bar"></div></div>
+      <div id="progressLabel" class="progress-label">0 / 0</div>
+    </header>
 
-    <div class="grid">
-      <section class="panel">
-        <h2>Draft Prompt</h2>
-        <p id="draftPrompt">Loading...</p>
-      </section>
-      <section class="panel">
-        <h2>Risk Summary</h2>
-        <ul id="riskSummary"></ul>
-      </section>
-    </div>
-
-    <div class="grid">
-      <section class="panel">
-        <h2>Repo Facts</h2>
-        <ul id="repoFacts"></ul>
-      </section>
-      <section class="panel">
-        <h2>How To Use</h2>
-        <ul>
-          <li>Choose <strong>Custom answer</strong> if you want to steer the implementation directly.</li>
-          <li>Choose <strong>Use default</strong> when the recommended default matches your intent.</li>
-          <li>Choose <strong>Skip</strong> only when the assumption is safe enough for this run.</li>
-        </ul>
-      </section>
-    </div>
-
-    <form id="wizardForm">
-      <div id="questions"></div>
-
-      <section class="panel">
-        <h2>Extra Notes</h2>
-        <textarea id="extraNotes" placeholder="Optional notes for Claude before it compiles the production-ready prompt."></textarea>
-        <div style="margin-top: 16px;">
-          <button type="submit">Save Answers</button>
+    <main class="stage">
+      <section id="introView" class="card">
+        <p class="intro-kicker">Prompt hardening</p>
+        <h1>Make your prompt production-ready before you let the agent cook.</h1>
+        <p class="lead">Answer only what matters. Everything else stays out of the way.</p>
+        <div class="details">
+          <details>
+            <summary>Prompt</summary>
+            <p id="draftPrompt">Loading...</p>
+          </details>
+          <details>
+            <summary>Context</summary>
+            <ul id="contextList"></ul>
+          </details>
         </div>
-        <div id="status"></div>
-        <p class="footer-note">After saving, go back to Claude Code and reply <code>done</code>.</p>
+        <div class="cta-row">
+          <span id="introCount" class="minimal"></span>
+          <div class="button-row">
+            <button id="startButton" type="button" class="button">Start</button>
+          </div>
+        </div>
       </section>
-    </form>
+
+      <section id="questionView" class="card" hidden>
+        <div class="meta-row">
+          <span id="importanceChip" class="chip chip-strong">Required</span>
+          <span id="categoryChip" class="chip">Scope</span>
+        </div>
+        <p id="questionIndex" class="question-kicker">Question 1</p>
+        <h2 id="questionText" class="question-text"></h2>
+        <p id="whyText" class="subtle"></p>
+        <div class="details">
+          <details>
+            <summary>Default / skip</summary>
+            <p id="defaultText"></p>
+            <p id="skipText"></p>
+          </details>
+        </div>
+        <div class="options">
+          <button type="button" class="option" data-mode="custom">
+            <span class="option-title">Custom answer</span>
+            <span class="option-note">Required if selected.</span>
+          </button>
+          <button type="button" class="option" data-mode="default">
+            <span class="option-title">Use default</span>
+            <span class="option-note" id="defaultOptionText"></span>
+          </button>
+          <button type="button" class="option" data-mode="skip">
+            <span class="option-title">Skip</span>
+            <span class="option-note" id="skipOptionText"></span>
+          </button>
+        </div>
+        <textarea id="answerInput" placeholder="Type your answer..."></textarea>
+        <div id="validationMessage" class="validation"></div>
+        <div class="footer-row">
+          <button id="backButton" type="button" class="button button-secondary">Back</button>
+          <div class="button-row">
+            <button id="nextButton" type="button" class="button">Next</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="notesView" class="card" hidden>
+        <p class="question-kicker">Final step</p>
+        <h2>Anything else?</h2>
+        <textarea id="extraNotes" placeholder="Optional note for Claude."></textarea>
+        <div id="status" class="status"></div>
+        <div class="footer-row">
+          <button id="notesBackButton" type="button" class="button button-secondary">Back</button>
+          <div class="button-row">
+            <button id="saveButton" type="button" class="button">Save</button>
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
 
   <script>
     let sessionData = null;
+    let answersState = [];
+    let currentStep = -1;
 
     async function fetchJson(path, options) {
       const response = await fetch(path, options);
       if (!response.ok) {
-        throw new Error(`Request failed: ${response.status}`);
+        let details = `Request failed: ${response.status}`;
+        try {
+          const payload = await response.json();
+          if (payload.error) {
+            details = payload.error;
+          }
+        } catch (error) {}
+        throw new Error(details);
       }
       return await response.json();
-    }
-
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;");
     }
 
     function byId(id) {
@@ -263,132 +412,232 @@ HTML_PAGE = """<!doctype html>
       });
     }
 
+    function stateForQuestion(question, existing) {
+      if (existing) {
+        return {
+          id: question.id,
+          mode: existing.mode || "custom",
+          value: existing.value || "",
+        };
+      }
+      return {
+        id: question.id,
+        mode: "custom",
+        value: "",
+      };
+    }
+
     function responseMap(existing) {
       const map = new Map();
       (existing.responses || []).forEach((response) => map.set(response.id, response));
       return map;
     }
 
-    function renderQuestions(questionnaire, existing) {
-      const responses = responseMap(existing);
-      const container = byId("questions");
-      container.innerHTML = "";
+    function totalSteps() {
+      const questions = sessionData ? sessionData.questions.length : 0;
+      return questions + 1;
+    }
 
-      questionnaire.questions.forEach((question, index) => {
-        const current = responses.get(question.id) || {};
-        const mode = current.mode || "default";
-        const value = current.value || "";
+    function setProgress(stepNumber) {
+      const total = totalSteps();
+      const clamped = Math.max(0, Math.min(stepNumber, total));
+      const percentage = total ? (clamped / total) * 100 : 0;
+      byId("progressBar").style.width = `${percentage}%`;
+      byId("progressLabel").textContent = `${clamped} / ${total}`;
+    }
 
-        const section = document.createElement("section");
-        section.className = "question";
-        section.dataset.questionId = question.id;
-        section.innerHTML = `
-          <div class="meta">
-            <span class="chip">${escapeHtml(question.importance)}</span>
-            <span class="chip">${escapeHtml(question.category)}</span>
-            <span class="chip">Question ${index + 1}</span>
-          </div>
-          <h3>${escapeHtml(question.question)}</h3>
-          <div class="block"><span class="label">Why it matters:</span> ${escapeHtml(question.whyItMatters)}</div>
-          <div class="block"><span class="label">Recommended default:</span> ${escapeHtml(question.recommendedDefault)}</div>
-          <div class="block"><span class="label">Assumption if skipped:</span> ${escapeHtml(question.assumptionIfSkipped)}</div>
-          <div class="choices">
-            <label class="choice">
-              <input type="radio" name="mode-${escapeHtml(question.id)}" value="custom" ${mode === "custom" ? "checked" : ""}>
-              Custom answer
-            </label>
-            <label class="choice">
-              <input type="radio" name="mode-${escapeHtml(question.id)}" value="default" ${mode === "default" ? "checked" : ""}>
-              Use default
-            </label>
-            <label class="choice">
-              <input type="radio" name="mode-${escapeHtml(question.id)}" value="skip" ${mode === "skip" ? "checked" : ""}>
-              Skip
-            </label>
-          </div>
-          <textarea data-role="value" placeholder="Enter your answer here.">${escapeHtml(value)}</textarea>
-        `;
-        container.appendChild(section);
+    function showView(viewId) {
+      ["introView", "questionView", "notesView"].forEach((id) => {
+        byId(id).hidden = id !== viewId;
       });
+    }
 
-      container.querySelectorAll(".question").forEach((questionNode) => {
-        const textarea = questionNode.querySelector("textarea");
-        const updateState = () => {
-          const mode = questionNode.querySelector("input[type=radio]:checked").value;
-          textarea.disabled = mode !== "custom";
-          if (mode !== "custom" && !textarea.dataset.preserved) {
-            textarea.value = "";
+    function currentQuestion() {
+      return sessionData.questions[currentStep];
+    }
+
+    function currentAnswerState() {
+      return answersState[currentStep];
+    }
+
+    function selectMode(mode) {
+      const state = currentAnswerState();
+      state.mode = mode;
+      document.querySelectorAll(".option").forEach((option) => {
+        option.classList.toggle("active", option.dataset.mode === mode);
+      });
+      const input = byId("answerInput");
+      input.disabled = mode !== "custom";
+      if (mode === "custom") {
+        input.focus();
+      }
+      byId("validationMessage").textContent = "";
+    }
+
+    function renderQuestion() {
+      const question = currentQuestion();
+      const state = currentAnswerState();
+
+      byId("importanceChip").textContent = question.importance;
+      byId("categoryChip").textContent = question.category;
+      byId("questionIndex").textContent = `Question ${currentStep + 1}`;
+      byId("questionText").textContent = question.question;
+      byId("whyText").textContent = question.whyItMatters;
+      byId("defaultText").textContent = `Use default: ${question.recommendedDefault}`;
+      byId("skipText").textContent = `Skip: ${question.assumptionIfSkipped}`;
+      byId("defaultOptionText").textContent = question.recommendedDefault;
+      byId("skipOptionText").textContent = question.assumptionIfSkipped;
+      byId("answerInput").value = state.value || "";
+      byId("backButton").disabled = currentStep === 0;
+      byId("nextButton").textContent = currentStep === sessionData.questions.length - 1 ? "Continue" : "Next";
+
+      selectMode(state.mode || "custom");
+      setProgress(currentStep + 1);
+      showView("questionView");
+    }
+
+    function renderNotes() {
+      byId("status").textContent = "";
+      byId("status").classList.remove("ok");
+      setProgress(totalSteps());
+      showView("notesView");
+    }
+
+    function validateCurrentQuestion() {
+      const state = currentAnswerState();
+      if (state.mode === "custom" && !state.value.trim()) {
+        byId("validationMessage").textContent = "Custom answer cannot be blank.";
+        return false;
+      }
+      byId("validationMessage").textContent = "";
+      return true;
+    }
+
+    function moveNext() {
+      const input = byId("answerInput");
+      currentAnswerState().value = input.value;
+      if (!validateCurrentQuestion()) {
+        return;
+      }
+      if (currentStep === sessionData.questions.length - 1) {
+        renderNotes();
+      } else {
+        currentStep += 1;
+        renderQuestion();
+      }
+    }
+
+    function moveBack() {
+      if (currentStep > 0) {
+        currentAnswerState().value = byId("answerInput").value;
+        currentStep -= 1;
+        renderQuestion();
+      } else {
+        showView("introView");
+        setProgress(0);
+      }
+    }
+
+    function buildPayload() {
+      return {
+        schemaVersion: 1,
+        responses: sessionData.questions.map((question, index) => {
+          const state = answersState[index];
+          const customValue = state.value.trim();
+          let finalValue = "";
+          if (state.mode === "custom") {
+            finalValue = customValue;
+          } else if (state.mode === "default") {
+            finalValue = question.recommendedDefault;
+          } else {
+            finalValue = question.assumptionIfSkipped;
           }
-        };
-        questionNode.querySelectorAll("input[type=radio]").forEach((radio) => {
-          radio.addEventListener("change", updateState);
-        });
-        updateState();
-      });
+          return {
+            id: question.id,
+            mode: state.mode,
+            value: customValue,
+            finalValue,
+          };
+        }),
+        extraNotes: byId("extraNotes").value.trim(),
+      };
     }
 
     async function loadSession() {
       try {
         const payload = await fetchJson("/api/session");
         sessionData = payload.questionnaire;
+        const existing = responseMap(payload.answers || {});
+        answersState = sessionData.questions.map((question) => stateForQuestion(question, existing.get(question.id)));
+
         byId("draftPrompt").textContent = sessionData.draftPrompt || "(missing draft prompt)";
-        renderList("riskSummary", sessionData.riskSummary || [], "No risk summary was provided.");
-        renderList("repoFacts", sessionData.repoFacts || [], "No repo facts were recorded.");
-        renderQuestions(sessionData, payload.answers || {});
+        renderList("contextList", [...(sessionData.riskSummary || []), ...(sessionData.repoFacts || [])], "No additional context.");
+        byId("introCount").textContent = `${sessionData.questions.length} questions`;
         byId("extraNotes").value = (payload.answers && payload.answers.extraNotes) || "";
+        setProgress(0);
       } catch (error) {
-        byId("status").textContent = `Failed to load session: ${error.message}`;
+        byId("introCount").textContent = "Load failed";
+        byId("draftPrompt").textContent = error.message;
       }
     }
 
-    async function saveAnswers(event) {
-      event.preventDefault();
-      if (!sessionData) {
-        byId("status").textContent = "Session data is not loaded yet.";
+    async function saveAnswers() {
+      const payload = buildPayload();
+      const hasBlankCustom = payload.responses.some((response) => response.mode === "custom" && !response.value);
+      if (hasBlankCustom) {
+        byId("status").textContent = "A custom answer is still blank.";
+        byId("status").classList.remove("ok");
         return;
       }
-
-      const responses = sessionData.questions.map((question) => {
-        const section = document.querySelector(`[data-question-id="${question.id}"]`);
-        const mode = section.querySelector("input[type=radio]:checked").value;
-        const value = section.querySelector("textarea").value.trim();
-        let finalValue = "";
-        if (mode === "custom") {
-          finalValue = value;
-        } else if (mode === "default") {
-          finalValue = question.recommendedDefault;
-        } else {
-          finalValue = question.assumptionIfSkipped;
-        }
-        return {
-          id: question.id,
-          mode,
-          value,
-          finalValue
-        };
-      });
-
-      const payload = {
-        schemaVersion: 1,
-        responses,
-        extraNotes: byId("extraNotes").value.trim()
-      };
 
       try {
         await fetchJson("/api/answers", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         });
-        byId("status").textContent = "Saved. Return to Claude Code and reply `done`.";
+        byId("status").textContent = "Saved. Go back to Claude Code and reply done.";
+        byId("status").classList.add("ok");
       } catch (error) {
-        byId("status").textContent = `Save failed: ${error.message}`;
+        byId("status").textContent = error.message;
+        byId("status").classList.remove("ok");
       }
     }
 
     document.addEventListener("DOMContentLoaded", () => {
       loadSession();
-      byId("wizardForm").addEventListener("submit", saveAnswers);
+
+      byId("startButton").addEventListener("click", () => {
+        if (!sessionData || !sessionData.questions.length) {
+          renderNotes();
+          return;
+        }
+        currentStep = 0;
+        renderQuestion();
+      });
+
+      document.querySelectorAll(".option").forEach((option) => {
+        option.addEventListener("click", () => selectMode(option.dataset.mode));
+      });
+
+      byId("answerInput").addEventListener("input", (event) => {
+        if (currentStep >= 0) {
+          currentAnswerState().value = event.target.value;
+        }
+      });
+
+      byId("nextButton").addEventListener("click", moveNext);
+      byId("backButton").addEventListener("click", moveBack);
+      byId("notesBackButton").addEventListener("click", () => {
+        if (sessionData && sessionData.questions.length) {
+          currentStep = sessionData.questions.length - 1;
+          renderQuestion();
+        } else {
+          showView("introView");
+          setProgress(0);
+        }
+      });
+      byId("saveButton").addEventListener("click", saveAnswers);
     });
   </script>
 </body>
@@ -465,6 +714,43 @@ class WizardHandler(BaseHTTPRequestHandler):
             payload = json.loads(raw_body.decode("utf-8"))
         except json.JSONDecodeError:
             self._json_response({"error": "invalid JSON"}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        questionnaire_path = self.session_dir / "questionnaire.json"
+        if not questionnaire_path.exists():
+            self._json_response({"error": "questionnaire.json not found"}, status=HTTPStatus.NOT_FOUND)
+            return
+
+        questionnaire = json.loads(questionnaire_path.read_text())
+        questions = questionnaire.get("questions", [])
+        question_map = {question.get("id"): question for question in questions}
+        responses = payload.get("responses")
+        if not isinstance(responses, list):
+            self._json_response({"error": "responses must be an array"}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        seen_ids = set()
+        for response in responses:
+            question_id = response.get("id")
+            if question_id not in question_map:
+                self._json_response({"error": f"unknown question id: {question_id}"}, status=HTTPStatus.BAD_REQUEST)
+                return
+            if question_id in seen_ids:
+                self._json_response({"error": f"duplicate question id: {question_id}"}, status=HTTPStatus.BAD_REQUEST)
+                return
+            seen_ids.add(question_id)
+
+            mode = response.get("mode")
+            if mode not in {"custom", "default", "skip"}:
+                self._json_response({"error": f"invalid mode for {question_id}"}, status=HTTPStatus.BAD_REQUEST)
+                return
+            if mode == "custom" and not str(response.get("value", "")).strip():
+                self._json_response({"error": f"custom answer cannot be blank for {question_id}"}, status=HTTPStatus.BAD_REQUEST)
+                return
+
+        missing_ids = [question_id for question_id in question_map if question_id not in seen_ids]
+        if missing_ids:
+            self._json_response({"error": f"missing responses for: {', '.join(missing_ids)}"}, status=HTTPStatus.BAD_REQUEST)
             return
 
         answers_path = self.session_dir / "answers.json"
