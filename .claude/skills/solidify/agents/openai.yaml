@@ -1,0 +1,7 @@
+interface:
+  display_name: "Solidify"
+  short_description: "Make your prompt production-ready before you let the agent cook"
+  default_prompt: "Use $solidify to make this draft task production-ready before you let the agent cook."
+
+policy:
+  allow_implicit_invocation: false
